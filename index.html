@@ -1,0 +1,938 @@
+--- START OF FILE text/html ---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运营行业核心进阶课表 - 电影画幅通铺版</title>
+    <style>
+        /* 引入高级无衬线体及优雅的衬线展示体 */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        /* 注册 CSS 自定义属性用于控制蓝色描边渐变旋转 */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        :root {
+            --bg-main: #fafbfc; 
+            --card-bg: #ffffff; 
+            --text-main: #111111;
+            --text-muted: #6b7280;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --font-editorial: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --font-serif: 'Playfair Display', Georgia, "Times New Roman", serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-editorial);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 80px; 
+        }
+
+        /* ==================== 16:9 全宽自适应 Banner ==================== */
+        .hero-banner {
+            width: 100%;
+            max-width: 100vw;
+            margin: 0;
+            border-radius: 0; 
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            padding: 80px 40px 160px 40px; 
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 !important; 
+        }
+
+        .header-top-tag {
+            font-size: 13px;
+            font-weight: 500;
+            color: #7a8290;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-family: var(--font-serif);
+            font-size: 60px; 
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: #1a1a1a;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.01));
+        }
+
+        .header-subtitle {
+            font-size: 15px; 
+            color: #555e6c;
+            max-width: 620px;
+            margin: 0 auto 24px auto;
+            line-height: 1.7;
+            letter-spacing: -0.1px;
+        }
+
+        .header-meta {
+            font-size: 13px; 
+            color: #848c9a;
+            font-family: monospace, var(--font-editorial);
+            letter-spacing: 0.5px;
+        }
+
+        /* ==================== 课表内容容器 ==================== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        /* 课表核心控制小部件 */
+        .course-schedule-widget {
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        /* 6列横向单行排列 */
+        .weeks-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: -100px; 
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 包装层：移除了底部的指示器连线样式 */
+        .card-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .week-card {
+            background: var(--card-bg);
+            background-image: linear-gradient(var(--card-bg), var(--card-bg)), linear-gradient(var(--border-color), var(--border-color));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border: 1.5px solid transparent; 
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* 选中/悬浮状态下的蓝色渐变流动边框效果 */
+        .card-wrapper:hover .week-card, .card-wrapper.active-card .week-card {
+            transform: translateY(-4px);
+            border: 1.5px solid transparent;
+            background-image: linear-gradient(var(--card-bg), var(--card-bg)), 
+                              conic-gradient(from var(--angle), #2563eb, #3b82f6, #06b6d4, #60a5fa, #2563eb);
+            animation: rotate-border 4s linear infinite;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.12); /* 蓝色外发光 */
+        }
+
+        @keyframes rotate-border {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        /* 1:1 正方形黄金画幅海报 */
+        .card-image-mini {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1; 
+            overflow: hidden;
+        }
+
+        /* 玻璃微反射高光层 */
+        .glass-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.06) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* 底部模糊渐消蒙版 */
+        .card-image-mini::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 100%);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* ==================== 1~6 周统一使用对应的静态图片背景 ==================== */
+        .w1-theme { background: url('w1-bg.png') no-repeat center/cover; }
+        .w2-theme { background: url('w2-bg.png') no-repeat center/cover; }
+        .w3-theme { background: url('w3-bg.png') no-repeat center/cover; }
+        .w4-theme { background: url('w4-bg.png') no-repeat center/cover; }
+        .w5-theme { background: url('w5-bg.png') no-repeat center/cover; }
+        .w6-theme { background: url('w6-bg.png') no-repeat center/cover; }
+
+        /* 周次角标 */
+        .week-badge-mini {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 10px;
+            z-index: 5;
+        }
+
+        /* 卡片文字介绍 */
+        .card-body-mini {
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .card-teacher-mini {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            align-self: flex-start;
+        }
+
+        .card-title-mini {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+            letter-spacing: -0.2px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ==================== 独立展开面板 ==================== */
+        .details-outer-panel {
+            position: relative;
+            margin-top: 40px; 
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        .details-outer-panel.active {
+            max-height: 1000px;
+            opacity: 1;
+            padding: 10px 0; 
+        }
+
+        /* 内容面板 */
+        .details-content {
+            display: none;
+            opacity: 0;
+        }
+
+        .details-content.active {
+            display: block;
+            opacity: 1;
+            animation: fadeInSimple 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeInSimple {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== 课表内容表格排版 ==================== */
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 前缀标识更换为蓝色 */
+        .panel-title::before {
+            content: "";
+            width: 4px;
+            height: 14px;
+            background: #3b82f6; 
+            border-radius: 2px;
+        }
+
+        .weekend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .day-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .day-group-header {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+
+        /* 主讲人文字标签更换为蓝色 */
+        .day-group-teacher {
+            color: #2563eb; 
+            font-weight: 700;
+        }
+
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .course-table tr {
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .course-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .course-table td {
+            padding: 10px 4px;
+            vertical-align: top;
+            font-size: 12.5px;
+        }
+
+        .course-table td.col-content {
+            font-weight: 700;
+            color: var(--text-main);
+            width: 40%;
+            padding-right: 15px;
+        }
+
+        .course-table td.col-desc {
+            color: var(--text-muted);
+            line-height: 1.5;
+            width: 60%;
+        }
+
+        /* ==================== 底部加速计划 ==================== */
+        .booster-section {
+            margin-top: 60px;
+            padding: 40px 20px 0 20px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .booster-title {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .booster-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .booster-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .booster-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .booster-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .editorial-link {
+            align-self: flex-start;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 1.5px solid var(--text-main);
+            padding-bottom: 1px;
+            margin-top: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .editorial-link:hover {
+            opacity: 0.6;
+        }
+
+        /* ==================== 响应式媒介查询 ==================== */
+        @media (max-width: 850px) {
+            body {
+                padding-bottom: 40px;
+            }
+
+            .hero-banner {
+                width: 100%;
+                margin: 0;
+                padding: 50px 20px 100px 20px;
+                border-radius: 0;
+            }
+
+            header h1 {
+                font-size: 32px; 
+            }
+
+            .weeks-row {
+                margin-top: -60px; 
+                display: flex;
+                overflow-x: auto;
+                gap: 15px;
+                padding-bottom: 15px;
+                scroll-snap-type: x mandatory;
+            }
+
+            .weeks-row::-webkit-scrollbar {
+                display: none;
+            }
+
+            .card-wrapper {
+                flex: 0 0 160px;
+                scroll-snap-align: start;
+            }
+
+            .weekend-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .booster-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== 16:9 全宽自适应 Banner ==================== -->
+    <div class="hero-banner">
+        <header>
+            <h1>运营职业技能课表</h1>
+            <p class="header-subtitle">基于人机协同新时代重构。系统化沉淀全链路图文、爆款视频制作方法，深度赋能 AI 智能自动化工作流，助力转行求职弯道超车。</p>
+            <div class="header-meta">Sep 18, 2026 · Online BootCamp</div>
+        </header>
+    </div>
+
+    <!-- 课表核心内容区域 -->
+    <div class="container">
+        
+        <!-- 课表核心控制小部件 -->
+        <div class="course-schedule-widget">
+            
+            <!-- 一行展示的六周卡片包装容器 -->
+            <div class="weeks-row">
+                <!-- 第 1 周 -->
+                <div class="card-wrapper" data-week="1">
+                    <div class="week-card">
+                        <div class="card-image-mini w1-theme">
+                            <span class="week-badge-mini">W1</span>
+                            <!-- 玻璃反射 -->
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第一周：运营认知突破与爆款基本功</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第 2 周 -->
+                <div class="card-wrapper" data-week="2">
+                    <div class="week-card">
+                        <div class="card-image-mini w2-theme">
+                            <span class="week-badge-mini">W2</span>
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第二周：图文内容专项运营</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第 3 周 -->
+                <div class="card-wrapper" data-week="3">
+                    <div class="week-card">
+                        <div class="card-image-mini w3-theme">
+                            <span class="week-badge-mini">W3</span>
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第三周：视频内容专项运营</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第 4 周 -->
+                <div class="card-wrapper" data-week="4">
+                    <div class="week-card">
+                        <div class="card-image-mini w4-theme">
+                            <span class="week-badge-mini">W4</span>
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第四周：AI 运营思维升级与人机协同</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第 5 周 -->
+                <div class="card-wrapper" data-week="5">
+                    <div class="week-card">
+                        <div class="card-image-mini w5-theme">
+                            <span class="week-badge-mini">W5</span>
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第五周：高薪运营的系统化必经之路</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第 6 周 -->
+                <div class="card-wrapper" data-week="6">
+                    <div class="week-card">
+                        <div class="card-image-mini w6-theme">
+                            <span class="week-badge-mini">W6</span>
+                            <div class="glass-overlay"></div>
+                        </div>
+                        <div class="card-body-mini">
+                            <span class="card-teacher-mini">导师：鹿九</span>
+                            <h3 class="card-title-mini">第六周：就业求职全链路突围</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== 外部独立全局展开面板（默认展示第一周） ==================== -->
+            <div class="details-outer-panel">
+                
+                <!-- WEEK 1 DETAILS -->
+                <div class="details-content" data-week="1">
+                    <div class="panel-title">第一周主线：运营认知突破与爆款基本功</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k1.1 运营行业工作内容</td>
+                                        <td class="col-desc">全面拆解各大运营岗位的核心职责、考核指标与日常。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k1.2 日常工作流程</td>
+                                        <td class="col-desc">建立从计划、执行、监控到复盘的标准日常工作流。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k1.3 运营团队构成</td>
+                                        <td class="col-desc">了解团队部门间协作机制，明确自己在团队中的生态位。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k1.4 0经验转行选行业</td>
+                                        <td class="col-desc">深度解析红利与夕阳行业，教你避开重度红海与陷阱。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k1.5 可投递的高薪岗位</td>
+                                        <td class="col-desc">锁定高成长、高壁垒的特定精细化高薪岗位。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k1.6 竞品调研与选题爆款</td>
+                                        <td class="col-desc">梳理竞品调研方法，搭建可持续产出内容的选题库。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k1.7 平台规则与防限流</td>
+                                        <td class="col-desc">深入底层合规和推荐机制，掌握安全申诉与应对。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEK 2 DETAILS -->
+                <div class="details-content" data-week="2">
+                    <div class="panel-title">第二周主线：图文内容专项运营</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k2.1 图文内容拆解和制作</td>
+                                        <td class="col-desc">解析高转化图文内容的核心框架，掌握排版技巧与流水线制作模式。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k2.2 图文商业应用思路</td>
+                                        <td class="col-desc">探索如何利用图文承接商业诉求，打通从内容生产到变现路径。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k2.3 私域引流与转化路径</td>
+                                        <td class="col-desc">掌握全网吸粉引流、清洗沉淀并转化高潜线索的完整闭环。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k2.4 品牌种草实战拆解</td>
+                                        <td class="col-desc">还原真实操盘路径，拆解小红书、知乎等核心阵地种草SOP。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k2.5 矩阵提效运营机制</td>
+                                        <td class="col-desc">多渠道账号布局方案、一键分发机制与团队产出提效体系。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEK 3 DETAILS -->
+                <div class="details-content" data-week="3">
+                    <div class="panel-title">第三周主线：视频内容专项运营</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k3.1 四大脚本结构模板</td>
+                                        <td class="col-desc">故事、测评、干货、娱乐等主流方向的模板化脚本框架。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k3.2 视频定位与策划</td>
+                                        <td class="col-desc">确定新媒体视频调性，策划出贴合平台算法和人群偏好的选题。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k3.3 口播内容制作技巧</td>
+                                        <td class="col-desc">镜头表现力、黄金三秒吸睛法则以及后期剪辑节奏与包装。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k3.4 IP账号运营规划</td>
+                                        <td class="col-desc">打造个人或企业IP，梳理高成长、高客单的商业变现闭环。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k3.5 信息流项目拆解复盘</td>
+                                        <td class="col-desc">解读跑量爆款素材生产流，搭配主渠道AD平台数据分析。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEK 4 DETAILS -->
+                <div class="details-content" data-week="4">
+                    <div class="panel-title">第四周主线：AI 运营思维升级与人机协同</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k4.1 AI 基础与思维框架</td>
+                                        <td class="col-desc">建立AI协同运营全局视角，探索日常工作中的高价值定位。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k4.2 提示词工程使用技巧</td>
+                                        <td class="col-desc">掌握提示词（Prompt）工程调教，应用“角色、任务、框架”公式。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">AI工作流 搭建高效AI流</td>
+                                        <td class="col-desc">将信息处理封装为标准流，实现碎片任务一键化执行。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k4.3 用AI做选题库</td>
+                                        <td class="col-desc">利用大模型极速沉淀符合真实用户痛点需求的选题库。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k4.4 用AI批量生产内容</td>
+                                        <td class="col-desc">大模型作为高阶智能助手，批量产出高质量文章与视频脚本。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k4.5 AI辅助竞品调研与数据</td>
+                                        <td class="col-desc">深度解析对手投放，配合自研漏斗模型极速输出复盘。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k4.6 AI运营边界</td>
+                                        <td class="col-desc">界定哪些工作交给AI，哪些高阶思考由运营师把关。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEK 5 DETAILS -->
+                <div class="details-content" data-week="5">
+                    <div class="panel-title">第五周主线：高薪运营的系统化必经之路</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k5.1 运营项目规划与策略</td>
+                                        <td class="col-desc">操盘新项目启动，规划全年核心事件里程碑并分配预算。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k5.2 精细化数据分析</td>
+                                        <td class="col-desc">熟练运用归因漏斗分析模型诊断流失与转化痛点。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k5.3 达人筛选标准投放逻辑</td>
+                                        <td class="col-desc">设计KOL投放评估指标体系，精准计算高投产比。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k5.4 搭建专业中台系统</td>
+                                        <td class="col-desc">打磨高度标准化、可复制的标准化日常运营SOP。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k5.5 运营团队管理方法</td>
+                                        <td class="col-desc">团队敏捷协同管理机制，科学设定高标准KPI/OKRs。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEEK 6 DETAILS -->
+                <div class="details-content" data-week="6">
+                    <div class="panel-title">第六周主线：就业求职全链路突围</div>
+                    <div class="weekend-grid">
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周六 / Saturday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k6.1 高薪简历深度撰写</td>
+                                        <td class="col-desc">提炼核心优势，使用STAR法则将工作产出高精度量化。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k6.2 高效投递投产策略</td>
+                                        <td class="col-desc">规避海投，深度布局直投、猎头内推、社群裂变等渠道。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k6.3 面试流程与求职管理</td>
+                                        <td class="col-desc">梳理初中终面关键考核，并列处理多家企业Offer进度。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k6.4 面试高频问题回答</td>
+                                        <td class="col-desc">掌握STAR法则回答套路，从容应对HR和业务负责人的考察。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-group-header"><span>周日 / Sunday</span><span class="day-group-teacher">主讲：鹿九</span></div>
+                            <table class="course-table">
+                                <tbody>
+                                    <tr>
+                                        <td class="col-content">k6.5 亮点作品集整理包装</td>
+                                        <td class="col-desc">高效归集项目实操数据，定制极具说服力的个人作品集。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k6.6 模拟面试和面试复盘</td>
+                                        <td class="col-desc">1v1高度仿真推演，排查表达死角，稳固临场抗压心理。</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-content">k6.7 面试录音深度诊断</td>
+                                        <td class="col-desc">实战回放求职录音，找准扣分项并极速打磨求职话术。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==================== 底部加速计划 ==================== -->
+    <div class="booster-section">
+        <div class="booster-title">Our Career Booster Plans.</div>
+        <div class="booster-grid">
+            <div class="booster-card">
+                <div class="booster-name">01. 0经验背调通关大法</div>
+                <div class="booster-desc">教你如何在遵守职场诚信的前提下，优化过往经历，从容通过背景调查。</div>
+                <a href="#" class="editorial-link">Read More</a>
+            </div>
+            <div class="booster-card">
+                <div class="booster-name">02. 薪资谈判术：让HR主动加价</div>
+                <div class="booster-desc">通过心理博弈、同行业薪酬支撑，优雅打破HR的压价策略，拿到预期溢价。</div>
+                <a href="#" class="editorial-link">Read More</a>
+            </div>
+            <div class="booster-card">
+                <div class="booster-name">03. 转行新人入职上手指南</div>
+                <div class="booster-desc">教你快速融入新团队，拆解入职首月工作节奏，安全稳妥地度过试用期考核。</div>
+                <a href="#" class="editorial-link">Read More</a>
+            </div>
+        </div>
+    </div>
+
+<script {id="schedule-script"}>
+    document.addEventListener("DOMContentLoaded", () => {
+        const wrappers = document.querySelectorAll(".card-wrapper");
+        const detailsOuter = document.querySelector(".details-outer-panel");
+        const detailsContents = document.querySelectorAll(".details-content");
+
+        // 打开对应周次课表并联动激活高亮状态的通用函数
+        function openWeek(weekNum) {
+            // 确保面板常开并显示
+            detailsOuter.classList.add("active");
+            
+            // 1. 切换卡片容器包装层的高亮状态类
+            wrappers.forEach(wrap => {
+                if (wrap.getAttribute("data-week") === weekNum) {
+                    wrap.classList.add("active-card");
+                } else {
+                    wrap.classList.remove("active-card");
+                }
+            });
+
+            // 2. 切换对应的详细面板内容
+            detailsContents.forEach(content => {
+                if (content.getAttribute("data-week") === weekNum) {
+                    content.classList.add("active");
+                } else {
+                    content.classList.remove("active");
+                }
+            });
+        }
+
+        // 初始化默认展示第一周（加载后默认常开）
+        openWeek("1");
+
+        // 绑定悬停与点击事件触发
+        wrappers.forEach(wrap => {
+            const weekNum = wrap.getAttribute("data-week");
+
+            // 桌面端滑过切换
+            wrap.addEventListener("mouseenter", () => {
+                openWeek(weekNum);
+            });
+
+            // 移动端点击切换
+            wrap.addEventListener("click", () => {
+                openWeek(weekNum);
+            });
+        });
+    });
+</script>
+</body>
+</html>
